@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++20
 
 INC = -I include
 
-SRC = $(wildcard src/*.cpp) \
+SRC = $(wildcard src/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 
