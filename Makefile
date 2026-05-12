@@ -5,7 +5,8 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++20
 
 INC = -I include
 
-SRC = $(wildcard src/*.cpp)
+SRC = $(wildcard src/*.cpp) \
+			$(wildcard src/Mutex/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -29,6 +30,10 @@ tests: $(OBJ_NO_MAIN) $(OBJ_TESTS)
 
 tests_run: tests
 	./$(TEST_TARGET)
+
+format:
+	@ find src/ -name "*.cpp" -type f -exec clang-format -i {} ";"
+	@ find include/ -name "*.hpp" -type f -exec clang-format -i {} ";"
 
 clean:
 	@ $(RM) $(OBJ)
