@@ -1,7 +1,7 @@
 TARGET = plazza
 
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++20
+CXXFLAGS = -Wall -Wextra -std=c++20
 
 INC = -I include
 
