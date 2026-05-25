@@ -47,6 +47,16 @@ std::pair<PizzaType, PizzaSize> Ipc::receivePizza(int kitchenId) {
   return {static_cast<PizzaType>(type), static_cast<PizzaSize>(size)};
 }
 
+Ipc &Ipc::operator<<(const ipcMsg &msg) {
+  send(msg._msg, msg._msgType);
+  return *this;
+}
+
+Ipc &Ipc::operator>>(const ipcMsg &msg) {
+  receive(msg._msgType);
+  return *this;
+}
+
 Ipc::~Ipc() {
   if (_reception)
     msgctl(_msgid, IPC_RMID, NULL);

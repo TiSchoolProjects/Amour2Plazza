@@ -14,6 +14,9 @@
 struct ipcMsg {
   long _msgType;
   char _msg[100];
+  PizzaType type;
+  PizzaSize size;
+  int kithenId;
 };
 
 class Ipc {
@@ -25,6 +28,8 @@ private:
 public:
   int send(std::string msg, long type);
   int sendPizza(PizzaType type, PizzaSize size, int kithenId);
+  Ipc &operator<<(const ipcMsg &msg);
+  Ipc &operator>>(const ipcMsg &msg);
   std::string receive(long type);
   std::pair<PizzaType, PizzaSize> receivePizza(int kithenId);
   Ipc(bool reception);
