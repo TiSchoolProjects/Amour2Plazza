@@ -13,7 +13,7 @@ Kitchen::Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int 
         Ingredients ing = static_cast<Ingredients>(i);
         _stock.push_back({ing, 5});
     }
-    for (size_t i = 0; i < numberOfCooks; i++) {
+    for (size_t i = 0; i < (size_t)numberOfCooks; i++) {
         _cooks.push_back(std::make_unique<Thread<std::function<void()>>>([this]() {
             this->cookFct();
         }));

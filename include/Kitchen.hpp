@@ -5,6 +5,8 @@
 #include "Mutex.hpp"
 #include <sstream>
 #include <functional>
+#include "EnumPlazza.hpp"
+#include "Ipc.hpp"
 
 enum Ingredients 
 {
