@@ -26,8 +26,11 @@ int Ipc::send(std::string msg, long type) {
 
 std::string Ipc::receive(long type) {
   ipcMsg received;
-  if (msgrcv(_msgid, &received, sizeof(received._msg), type, 0) == -1)
+  if (msgrcv(_msgid, &received, sizeof(received._msg), type, IPC_NOWAIT) == -1){
+    if (errno == ENOMSG)
+      return "";
     throw std::runtime_error("msgrcv failed");
+  }
   std::cout << "IPC: getting -> " << received._msg << std::endl;
   return received._msg;
 }
