@@ -28,6 +28,7 @@ private:
 public:
   int send(std::string msg, long type);
   int sendPizza(PizzaType type, PizzaSize size, int kithenId);
+  int sendPizzaToReception(PizzaType type, PizzaSize size, int kitchenId);
   Ipc &operator<<(const ipcMsg &msg);
   Ipc &operator>>(const ipcMsg &msg);
   std::string receive(long type);

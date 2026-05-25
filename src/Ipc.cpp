@@ -37,6 +37,11 @@ int Ipc::sendPizza(PizzaType type, PizzaSize size, int kitchenId) {
   return send(msg, NEWPIZZA + kitchenId);
 }
 
+int Ipc::sendPizzaToReception(PizzaType type, PizzaSize size, int kitchenId) {
+  std::string msg = std::to_string(kitchenId) + " " + std::to_string(type) + " " + std::to_string(size);
+  return send(msg, KITCHENRESP);
+}
+
 std::pair<PizzaType, PizzaSize> Ipc::receivePizza(int kitchenId) {
   int type;
   int size;
