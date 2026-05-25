@@ -29,10 +29,35 @@ Kitchen::~Kitchen()
         cook->stopThread();
     }
 }
+bool Kitchen::canCook(PizzaType type)
+{
+    bool canCook = false;
+
+    switch (type){
+        case Regina : 
+            if (_stock[dough].second > 0 && _stock[tomato].second > 0 &&
+                _stock[gruyere].second > 0 &&_stock[ham].second > 0 && _stock[mushrooms].second > 0) {
+                    canCook = true;
+                }
+            break;
+        case Margarita :
+            if (_stock[dough].second > 0 && _stock[tomato].second > 0 && _stock[gruyere].second > 0)
+                canCook = true;
+            break;
+        case Americana :
+            if (_stock[dough].second > 0 && _stock[tomato].second > 0 && _stock[gruyere].second > 0 && _stock[steak].second > 0)
+                canCook = true;
+            break;
+        case Fantasia : 
+            if (_stock[dough].second > 0 && _stock[tomato].second > 0 && _stock[eggPlant].second > 0 && _stock[goatCheese].second > 0 && _stock[chiefLove].second > 0)
+                canCook = true;
+            break;
+    }
+    return canCook;
+}
 
 void Kitchen::takeIngredients(PizzaType type)
 {
-    _mutex.lock();
     switch (type){
         case Regina :
             _stock[dough].second--;
@@ -60,7 +85,17 @@ void Kitchen::takeIngredients(PizzaType type)
             _stock[chiefLove].second--;
             break;
     }
+}
+
+bool Kitchen::tryToCook(PizzaType type)
+{
+    _mutex.lock();
+    bool pizzaCooked = canCook(type);
+    if (pizzaCooked){
+        takeIngredients(type);
+    }
     _mutex.unlock();
+    return pizzaCooked;
 }
 
 void Kitchen::cookFct()
@@ -74,6 +109,8 @@ void Kitchen::cookFct()
             currentOrder = _orders.front();
             _orders.pop();
             _mutex.unlock();
+            while (!tryToCook(currentOrder.first) && _isActive)
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
             switch (currentOrder.first){
                 case Regina :
                     bakeTime = 2.0;
@@ -89,11 +126,11 @@ void Kitchen::cookFct()
                     break;
             }
             double total = bakeTime * _cookingTime;
-            takeIngredients(currentOrder.first);
             std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(total * 1000)));
             _ipc.sendPizzaToReception(currentOrder.first, currentOrder.second, _id);
         } else {
             _mutex.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
 }
@@ -110,7 +147,7 @@ void Kitchen::run()
         if (timeSinceRefill >= _timeToRefillMS) {
             _mutex.lock();
             for (auto &ingredient : _stock){
-                if (ingredient.second = 5)
+                if (ingredient.second == 5)
                     continue;
                 ingredient.second++;
             }
