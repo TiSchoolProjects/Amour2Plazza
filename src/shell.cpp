@@ -29,6 +29,7 @@ Shell::Shell(__attribute_maybe_unused__ int ac, __attribute_maybe_unused__ char 
     _cookingTime = std::stod(argv[1]);
     _numberOfCooks = std::stoi(argv[2]);
     _timeToRefillMs = std::stoi(argv[3]);
+    _reception = std::make_unique<Reception>(_cookingTime, _numberOfCooks, _timeToRefillMs);
     std::cout << std::format("- Time (double) : {}\n", _cookingTime);
     std::cout << std::format("- Number of Cooks (int)    : {}\n",
                              _numberOfCooks);
@@ -45,14 +46,14 @@ void Shell::run() {
 
     while (std::getline(std::cin, line)) {
         if (line == "status") {
-            //Link to the reception
+            _reception->displayStatus(); 
             continue;
         }
 
         std::stringstream ss(line);
         std::string token;
         bool syntax_error = false;
-
+        std::vector<std::pair<PizzaType, PizzaSize>> newPizzaOrder;
         while (std::getline(ss, token, ';')) {
             std::smatch matches;
             
@@ -69,6 +70,9 @@ void Shell::run() {
                 if (type_it != _pizzaTypeMap.end() && size_it != _pizzaSizeMap.end()) {
                     PizzaType final_type = type_it->second;
                     PizzaSize final_size = size_it->second;
+                    for (int i = 0; i < multiplier; ++i) {
+                        newPizzaOrder.push_back({final_type, final_size});
+                    }
                 } else {
                     std::cerr << "Error : unkown'" << matches[1].str() << "'" << std::endl;
                     syntax_error = true;
@@ -80,6 +84,9 @@ void Shell::run() {
                 syntax_error = true;
                 break;
             }
+        }
+        if (!syntax_error && !newPizzaOrder.empty()) {
+            _reception->handleOrder(newPizzaOrder);
         }
     }
 }
