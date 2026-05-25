@@ -1,6 +1,6 @@
 #include "Kitchen.hpp"
 
-Kitchen::Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int id) : _ipc(true)
+Kitchen::Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int id) : _ipc(false)
 {
     _cookingTime = cookingTime;
     _numberOfCooks = numberOfCooks;
