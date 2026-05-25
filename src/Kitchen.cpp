@@ -9,7 +9,7 @@ Kitchen::Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int 
     _isActive = true;
     _id = id;
 
-    for (size_t i = 0; i < 8; i++) {
+    for (size_t i = 0; i < 9; i++) {
         Ingredients ing = static_cast<Ingredients>(i);
         _stock.push_back({ing, 5});
     }
@@ -28,6 +28,39 @@ Kitchen::~Kitchen()
     for (auto &cook : _cooks) {
         cook->stopThread();
     }
+}
+
+void Kitchen::takeIngredients(PizzaType type)
+{
+    _mutex.lock();
+    switch (type){
+        case Regina :
+            _stock[dough].second--;
+            _stock[tomato].second--;
+            _stock[gruyere].second--;
+            _stock[ham].second--;
+            _stock[mushrooms].second--;
+            break;
+        case Margarita : 
+            _stock[dough].second--;
+            _stock[tomato].second--;
+            _stock[gruyere].second--;
+            break;
+        case Americana :
+            _stock[dough].second--;
+            _stock[tomato].second--;
+            _stock[gruyere].second--;
+            _stock[steak].second--;
+            break;
+        case Fantasia :
+            _stock[dough].second--;
+            _stock[tomato].second--;
+            _stock[eggPlant].second--;
+            _stock[goatCheese].second--;
+            _stock[chiefLove].second--;
+            break;
+    }
+    _mutex.unlock();
 }
 
 void Kitchen::cookFct()
@@ -56,6 +89,7 @@ void Kitchen::cookFct()
                     break;
             }
             double total = bakeTime * _cookingTime;
+            takeIngredients(currentOrder.first);
             std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(total * 1000)));
             _ipc.sendPizzaToReception(currentOrder.first, currentOrder.second, _id);
         } else {
@@ -83,7 +117,7 @@ void Kitchen::run()
             _mutex.unlock();
             lastRefill = now;
         }
-        auto timeSinceActivity = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastActivity).count();
+        auto timeSinceActivity = std::chrono::duration_cast<std::chrono::seconds>(now - lastActivity).count();
         if (timeSinceActivity >= 5 && _orders.empty()) {
             _isActive = false;
             std::cout << "Kitchen ID: " << _id << "closed." << std::endl;
