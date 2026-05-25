@@ -3,6 +3,7 @@
 #include "Thread.hpp"
 #include <queue>
 #include "Mutex.hpp"
+#include <sstream>
 #include <functional>
 
 enum Ingredients 
@@ -30,6 +31,7 @@ class Kitchen
         std::vector<std::unique_ptr<Thread<std::function<void()>>>> _cooks;
         std::queue<std::pair<PizzaType, PizzaSize>> _orders;
         void cookFct();
+        void takeIngredients(PizzaType type);
         Ipc _ipc;
         int _id;
         int _nbOfPizzas;
