@@ -2,6 +2,7 @@
 #include "Reception.hpp"
 #include "Thread.hpp"
 #include <queue>
+#include "Mutex.hpp"
 #include <functional>
 
 enum Ingredients 
@@ -20,7 +21,7 @@ enum Ingredients
 class Kitchen 
 {
     public:
-        Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS);
+        Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int id);
         ~Kitchen();
         void run();
     private:
@@ -28,9 +29,12 @@ class Kitchen
         int _numberOfCooks;
         std::vector<std::unique_ptr<Thread<std::function<void()>>>> _cooks;
         std::queue<std::pair<PizzaType, PizzaSize>> _orders;
+        void cookFct();
         Ipc _ipc;
         int _id;
         int _nbOfPizzas;
+        Mutex _mutex;
+        bool _isActive;
         int _timeToRefillMS;
         double _cookingTime;
 };
