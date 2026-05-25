@@ -32,6 +32,8 @@ class Kitchen
         std::queue<std::pair<PizzaType, PizzaSize>> _orders;
         void cookFct();
         void takeIngredients(PizzaType type);
+        bool canCook(PizzaType type);
+        bool tryToCook(PizzaType type);
         Ipc _ipc;
         int _id;
         int _nbOfPizzas;
