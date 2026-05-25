@@ -63,3 +63,46 @@ void Kitchen::cookFct()
         }
     }
 }
+
+void Kitchen::run()
+{
+    auto lastActivity = std::chrono::steady_clock::now();
+    auto lastRefill = std::chrono::steady_clock::now();
+
+    while (_isActive) {
+        auto now = std::chrono::steady_clock::now();
+        auto timeSinceRefill = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastRefill).count();
+
+        if (timeSinceRefill >= _timeToRefillMS) {
+            _mutex.lock();
+            for (auto &ingredient : _stock){
+                if (ingredient.second = 5)
+                    continue;
+                ingredient.second++;
+            }
+            _mutex.unlock();
+            lastRefill = now;
+        }
+        auto timeSinceActivity = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastActivity).count();
+        if (timeSinceActivity >= 5 && _orders.empty()) {
+            _isActive = false;
+            std::cout << "Kitchen ID: " << _id << "closed." << std::endl;
+            break;
+        }
+        std::string msgOrder = _ipc.receive(NEWPIZZA + _id);
+        if (!msgOrder.empty()) {
+            std::stringstream ss(msgOrder);
+            int type;
+            int size;
+            ss >> type >> size;
+            _mutex.lock();
+            std::pair<PizzaType, PizzaSize> newPizza;
+            newPizza.first = static_cast<PizzaType>(type);
+            newPizza.second = static_cast<PizzaSize>(size);
+            _orders.push(newPizza);
+            _mutex.unlock();
+            lastActivity = std::chrono::steady_clock::now();
+        } else
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
