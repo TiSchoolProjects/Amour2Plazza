@@ -27,6 +27,7 @@ class Kitchen
         Kitchen(double cookingTime, int numberOfCooks, int timeToRefillMS, int id);
         ~Kitchen();
         void run();
+        void displayStatus();
     private:
         std::vector<std::pair<Ingredients, int>> _stock;
         int _numberOfCooks;

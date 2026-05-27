@@ -10,6 +10,8 @@
 #include "EnumPlazza.hpp"
 #include "Ipc.hpp"
 
+#define STATUS 99
+
 class Reception {
     public:
         Reception(double cookingTime, size_t numberOfCooks, size_t timeToRefillMs);

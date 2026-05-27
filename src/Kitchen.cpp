@@ -135,6 +135,15 @@ void Kitchen::cookFct()
     }
 }
 
+void Kitchen::displayStatus()
+{
+    _mutex.lock();
+    for (size_t i = 0; i < 9; i++) {
+        std::cout << _stock[i].first << ": " << _stock[i].second << std::endl;
+    }
+    _mutex.unlock();
+}
+
 void Kitchen::run()
 {
     auto lastActivity = std::chrono::steady_clock::now();
@@ -166,10 +175,14 @@ void Kitchen::run()
             int type;
             int size;
             ss >> type >> size;
-            _mutex.lock();
             std::pair<PizzaType, PizzaSize> newPizza;
             newPizza.first = static_cast<PizzaType>(type);
             newPizza.second = static_cast<PizzaSize>(size);
+            if (static_cast<int>(newPizza.first) == STATUS && static_cast<int>(newPizza.second) == STATUS){
+                displayStatus();
+                continue;
+            }
+            _mutex.lock();
             _orders.push(newPizza);
             _mutex.unlock();
             lastActivity = std::chrono::steady_clock::now();

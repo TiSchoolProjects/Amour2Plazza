@@ -104,6 +104,7 @@ void Reception::displayStatus()
     for (const auto &k : _kitchens) {
         std::cout << "Kitchen id " << k.id << "; pizzas:" << k.activePizzas << " / " << (_numberOfCooks * 2) <<std::endl;
         std::cout << "Stock of Ingredients :" << std::endl;
+        _ipc.sendPizza(static_cast<PizzaType>(STATUS), static_cast<PizzaSize>(STATUS), k.id);
     }
     std::cout << "\n\n" << std::flush;
 }
