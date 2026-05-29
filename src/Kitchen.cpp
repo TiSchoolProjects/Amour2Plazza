@@ -105,12 +105,20 @@ void Kitchen::cookFct()
 
     while(_isActive) {
         _mutex.lock();
+        while (_orders.empty() && _isActive)
+            _cond.wait(_mutex);
+        if (_orders.empty() && !_isActive) {
+            _mutex.unlock();
+            break;
+        }
         if (!_orders.empty()) {
             currentOrder = _orders.front();
             _orders.pop();
             _mutex.unlock();
             while (!tryToCook(currentOrder.first) && _isActive)
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            if (!_isActive)
+                break;
             switch (currentOrder.first){
                 case Regina :
                     bakeTime = 2.0;
@@ -166,6 +174,7 @@ void Kitchen::run()
         auto timeSinceActivity = std::chrono::duration_cast<std::chrono::seconds>(now - lastActivity).count();
         if (timeSinceActivity >= 5 && _orders.empty()) {
             _isActive = false;
+            _cond.broadcast();
             std::cout << "Kitchen ID: " << _id << "closed." << std::endl;
             break;
         }
@@ -185,6 +194,7 @@ void Kitchen::run()
             _mutex.lock();
             _orders.push(newPizza);
             _mutex.unlock();
+            _cond.signal();
             lastActivity = std::chrono::steady_clock::now();
         } else
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

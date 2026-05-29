@@ -5,6 +5,7 @@
 #include "Mutex.hpp"
 #include <sstream>
 #include <functional>
+#include "ICondVariable.hpp"
 #include "EnumPlazza.hpp"
 #include "Ipc.hpp"
 
@@ -44,4 +45,6 @@ class Kitchen
         bool _isActive;
         int _timeToRefillMS;
         double _cookingTime;
+        ConditionVariable _cond;
 };
+
