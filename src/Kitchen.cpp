@@ -175,7 +175,7 @@ void Kitchen::run()
         if (timeSinceActivity >= 5 && _orders.empty()) {
             _isActive = false;
             _cond.broadcast();
-            std::cout << "Kitchen ID: " << _id << "closed." << std::endl;
+            std::cout << "Kitchen ID: " << _id << " closed." << std::endl;
             break;
         }
         std::string msgOrder = _ipc.receive(NEWPIZZA + _id);
